@@ -1,0 +1,7 @@
+node_modules
+/prototype/*
+infra-*/cdk.out/*
+cdk-outputs.json
+.env
+**/jk_temp/*
+**/contracts_old/*
