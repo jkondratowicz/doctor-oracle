@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { BrowserRouter } from 'react-router-dom';
+import { PatientContextProvider } from './hooks/usePatientContext.tsx';
 
 const theme = extendTheme({
   colors: {
@@ -14,7 +15,6 @@ const theme = extendTheme({
       darkRed: '#F55D56',
       lightRed: '#DB7756',
       bgGrey: '#dce0ed',
-      bgWhite: '#fefffa',
     },
   },
 });
@@ -23,7 +23,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <BrowserRouter>
-        <App />
+        <PatientContextProvider>
+          <App />
+        </PatientContextProvider>
       </BrowserRouter>
     </ChakraProvider>
   </React.StrictMode>

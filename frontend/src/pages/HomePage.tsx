@@ -3,6 +3,7 @@ import { Box, Button, Center, Icon, SimpleGrid, VStack } from '@chakra-ui/react'
 import { Feature } from '../components/Feature.tsx';
 import { FcGlobe, FcKey, FcLike, FcSurvey } from 'react-icons/fc';
 import { Link as ReactRouterLink } from 'react-router-dom';
+import { Footer } from '../components/Footer.tsx';
 
 export const HomePage = () => {
   return (
@@ -46,6 +47,13 @@ export const HomePage = () => {
                 }
               />
             </SimpleGrid>
+          </Box>
+        </Center>
+      </Box>
+      <Box w="100%" bg="white" pt={20}>
+        <Center>
+          <Box p={4} mb={8} maxW="1200px">
+            <Footer />
           </Box>
         </Center>
       </Box>
