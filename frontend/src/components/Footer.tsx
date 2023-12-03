@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Box, Container, Stack, Text, VisuallyHidden, chakra, useColorModeValue } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const SocialButton = ({ children, label, href }: { children: ReactNode; label: string; href: string }) => {
   return (
@@ -31,13 +32,13 @@ export const Footer = () => {
     <Box color={useColorModeValue('gray.700', 'gray.200')}>
       <Container as={Stack} maxW={'6xl'} py={4} spacing={4} justify={'center'} align={'center'}>
         <Stack direction={'row'} spacing={20}>
-          <Box as="a" href={'/'}>
+          <Box as={Link} to={'/'}>
             Home page
           </Box>
-          <Box as="a" href={'/introduction'}>
+          <Box as={Link} to={'/introduction'}>
             Medical survey
           </Box>
-          <Box as="a" href={'/faq'}>
+          <Box as={Link} to={'/faq'}>
             FAQ
           </Box>
           <SocialButton label={'GitHub'} href={'https://github.com/jkondratowicz/doctor-oracle'}>
