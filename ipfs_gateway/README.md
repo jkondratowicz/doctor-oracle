@@ -1,0 +1,1 @@
+Super basic API to upload files to IPFS. Needed because Chainlink Functions doesn't seem to support FormData, required for `multipart/form-data` uploads.

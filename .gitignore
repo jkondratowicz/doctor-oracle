@@ -5,3 +5,4 @@ cdk-outputs.json
 .env
 **/jk_temp/*
 **/contracts_old/*
+**/cdk.out/*

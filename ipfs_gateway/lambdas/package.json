@@ -1,0 +1,14 @@
+{
+  "name": "doctor-oracle-ipfs-lambdas",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@types/aws-lambda": "*",
+    "@types/node": "*"
+  },
+  "dependencies": {
+    "aws-lambda": "*",
+    "aws-sdk": "*",
+    "axios": "^1.6.2",
+    "form-data": "*"
+  }
+}

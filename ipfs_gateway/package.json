@@ -1,0 +1,20 @@
+{
+  "name": "doctor-oracle-ipfs",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "(cd lambdas && npm install);",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "aws-cdk": "*",
+    "esbuild": "^0.19.8",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.0.0",
+    "constructs": "^10.0.0"
+  }
+}
