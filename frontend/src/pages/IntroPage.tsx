@@ -85,6 +85,11 @@ export const IntroPage = () => {
         </ListItem>
         <ListItem>
           <ListIcon as={MdCheckCircle} color="green.500" />
+          Under no circumstances should this service be used to diagnose or treat medical conditions in others; users are only allowed to enter medical
+          information related to themselves. Children under the age of 18 are not allowed to use the service.
+        </ListItem>
+        <ListItem>
+          <ListIcon as={MdCheckCircle} color="green.500" />
           Information presented by Doctor Oracle is generated using Large Language Models (LLMs) and may not be accurate, including the risk of hallucinations
           and bias.
         </ListItem>

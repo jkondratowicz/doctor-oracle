@@ -34,7 +34,7 @@ export const HomePage = () => {
                 title={'Strong encryption'}
                 text={
                   <>
-                    Your data is safe with us. We use strong encryption (<strong>ECC</strong>) combined with privacy-preserving blockchain technology (
+                    Your data is safe with us. We use <strong>strong encryption</strong> (RSA + AES) combined with privacy-preserving blockchain technology (
                     <strong>Chainlink Functions</strong>) to ensure that the information you provide is safe and secure.
                   </>
                 }
@@ -43,7 +43,10 @@ export const HomePage = () => {
                 icon={<Icon as={FcGlobe} w={10} h={10} />}
                 title={'Available worldwide'}
                 text={
-                  'Doctor Oracle can provide accurate medical information to people all around the globe, including members of underserved communities with limited access to professional healthcare.'
+                  <>
+                    Doctor Oracle can provide accurate medical information to people all around the globe, including{' '}
+                    <strong>members of underserved communities</strong> with limited access to professional healthcare.
+                  </>
                 }
               />
             </SimpleGrid>

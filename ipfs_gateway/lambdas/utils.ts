@@ -21,9 +21,11 @@ export function errorResponse(statusCode: number, errorMessage: string): APIGate
   };
 }
 
+// Functions simulator sends raw data, while DON-based functions send it stringified ( ͡° ͜ʖ ͡°)
 export const getRequestBody = <T = any>(event: APIGatewayProxyEvent): Record<string, T> => {
-  if (event.body) {
-    return JSON.parse(event.body);
+  let parsed = event.body;
+  while (typeof parsed !== 'object') {
+    parsed = JSON.parse(parsed);
   }
-  return {};
+  return parsed;
 };

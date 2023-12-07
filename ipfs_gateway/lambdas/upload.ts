@@ -10,8 +10,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log('body', JSON.stringify(body, null, 2));
 
     const formData = new FormData();
-    formData.append('Key', 'encryptedResponse.txt');
-    formData.append('Body', Buffer.from(body.encryptedResponse), 'encryptedResponse.txt');
+    formData.append('Key', body.filename);
+    formData.append('Body', Buffer.from(body.content), body.filename);
     formData.append('ContentType', 'text/plain');
 
     const response = await axios.request({
