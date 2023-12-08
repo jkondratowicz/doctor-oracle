@@ -10,7 +10,7 @@ const requestConfig = {
     quickNodeApiKey: process.env.QUICKNODE_API_KEY ?? '',
     IPFSGatewayUrl: process.env.IPFS_GATEWAY_URL ?? '',
   },
-  secretsLocation: Location.DONHosted,
+  secretsLocation: Location.Remote,
   // 0: cid                       IPFS CID where encrypted patient data is stored
   // 1: patientPublicKeyBase64    public RSA key of the patient required to decrypt the AES key, which in turn decrypts patient data
   args: [
