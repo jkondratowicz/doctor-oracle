@@ -1,7 +1,8 @@
 import logo from '../assets/logo.png';
+import nurseIcon from '../assets/icons8-nurse-48.png';
 import { Box, Button, Center, Icon, SimpleGrid, VStack } from '@chakra-ui/react';
 import { Feature } from '../components/Feature.tsx';
-import { FcGlobe, FcKey, FcLike, FcSurvey } from 'react-icons/fc';
+import { FcGlobe, FcKey, FcSurvey } from 'react-icons/fc';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { Footer } from '../components/Footer.tsx';
 
@@ -12,7 +13,17 @@ export const HomePage = () => {
         <Center>
           <VStack>
             <img src={logo} alt="Doctor Oracle" />
-            <Button size="lg" leftIcon={<FcLike />} mt={12} mb={6} border="2px" borderColor="brand.darkRed" as={ReactRouterLink} to="/introduction">
+            <Button
+              size="lg"
+              leftIcon={<img src={nurseIcon} alt="Doctor Oracle" />}
+              mt={12}
+              mb={6}
+              py={8}
+              border="2px"
+              borderColor="brand.darkRed"
+              as={ReactRouterLink}
+              to="/introduction"
+            >
               Get started - talk to Doctor Oracle
             </Button>
           </VStack>

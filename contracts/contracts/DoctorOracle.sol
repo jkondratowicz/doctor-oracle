@@ -9,6 +9,7 @@ import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0
 contract DoctorOracle is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
 
+    bytes32 public s_donId;
     bytes32 public s_lastRequestId;
     mapping(address => uint) public s_balances;
     mapping(bytes32 => address) public s_patientAddresses;
@@ -20,41 +21,39 @@ contract DoctorOracle is FunctionsClient, ConfirmedOwner {
     event DoctorOracleResponse(bytes32 indexed requestId, address indexed patientsAddress, bytes response, bytes err);
 
     constructor(
-        address router
-    ) FunctionsClient(router) ConfirmedOwner(msg.sender) {}
+        address router,
+        bytes32 donId
+    ) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+        s_donId = donId;
+    }
+
+    function setDonId(bytes32 newDonId) external onlyOwner {
+        s_donId = newDonId;
+    }
 
     function sendRequest(
-        string memory source,
-        bytes memory encryptedSecretsUrls,
-        uint8 donHostedSecretsSlotID,
-        uint64 donHostedSecretsVersion,
-        string[] memory args,
-        bytes[] memory bytesArgs,
+        string calldata source,
+        FunctionsRequest.Location secretsLocation,
+        bytes calldata encryptedSecretsReference,
+        string[] calldata args,
+        bytes[] calldata bytesArgs,
         uint64 subscriptionId,
-        uint32 gasLimit,
-        bytes32 donID
+        uint32 callbackGasLimit
     ) external returns (bytes32 requestId) {
-        _validateAndSubtractBalance(msg.sender, gasLimit);
+        _validateAndSubtractBalance(msg.sender, callbackGasLimit);
 
         FunctionsRequest.Request memory req;
-        req.initializeRequestForInlineJavaScript(source);
-
-        if (encryptedSecretsUrls.length > 0) {
-            req.addSecretsReference(encryptedSecretsUrls);
-        } else if (donHostedSecretsVersion > 0) {
-            req.addDONHostedSecrets(
-                donHostedSecretsSlotID,
-                donHostedSecretsVersion
-            );
+        req.initializeRequest(FunctionsRequest.Location.Inline, FunctionsRequest.CodeLanguage.JavaScript, source);
+        req.secretsLocation = secretsLocation;
+        req.encryptedSecretsReference = encryptedSecretsReference;
+        if (args.length > 0) {
+            req.setArgs(args);
         }
-        if (args.length > 0) req.setArgs(args);
-        if (bytesArgs.length > 0) req.setBytesArgs(bytesArgs);
-        s_lastRequestId = _sendRequest(
-            req.encodeCBOR(),
-            subscriptionId,
-            gasLimit,
-            donID
-        );
+        if (bytesArgs.length > 0) {
+            req.setBytesArgs(bytesArgs);
+        }
+        s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, callbackGasLimit, s_donId);
+
         return s_lastRequestId;
     }
 
@@ -67,10 +66,20 @@ contract DoctorOracle is FunctionsClient, ConfirmedOwner {
         s_errors[requestId] = err;
         emit DoctorOracleResponse(requestId, s_patientAddresses[requestId], response, err);
 
-        // @todo in real product we'd calculate actual gas used and refund the difference
+        // @todo in post-PoC version, calculate actual gas used and refund the difference
     }
 
-    function _validateBalance(address patient, uint32 gasLimit) internal {
+    function updateBalance(
+        address patient,
+        uint newBalance
+    ) external onlyOwner {
+        s_balances[patient] = newBalance;
+    }
+
+    function _validateAndSubtractBalance(address patient, uint32 gasLimit) internal {
+        if (msg.sender == owner()) {
+            return;
+        }
         uint requiredBalance = _getJuelsFromWei(gasLimit * tx.gasprice);
         if (s_balances[patient] < requiredBalance) {
             revert InsufficientBalance(patient);
@@ -78,8 +87,8 @@ contract DoctorOracle is FunctionsClient, ConfirmedOwner {
         s_balances[patient] -= requiredBalance;
     }
 
-    // @notice normally we'd get it from Chainlink price feeds, but for testnet it makes little sense :)
-    function _getJuelsFromWei(uint256 amountWei) private view returns (uint96) {
-        return 1e9;
+    // @notice mocked for PoC, normally we'd get it from Chainlink price feeds, but for testnet it makes little sense
+    function _getJuelsFromWei(uint256 amountWei) private pure returns (uint96) {
+        return uint96(1e9 * amountWei);
     }
 }

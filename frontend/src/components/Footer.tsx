@@ -59,6 +59,15 @@ export const Footer = () => {
         >
           <Text color={'gray.400'}>Doctor Oracle is in a proof of concept stage. DO NOT USE FOR ACTUAL MEDICAL ADVICE!</Text>
         </Container>
+        <Container mt={4}>
+          <a target="_blank" href="https://icons8.com/icon/9U80eDPY1VeX/nurse">
+            Nurse
+          </a>{' '}
+          icon by{' '}
+          <a target="_blank" href="https://icons8.com">
+            Icons8
+          </a>
+        </Container>
       </Box>
     </Box>
   );

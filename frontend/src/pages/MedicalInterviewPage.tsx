@@ -1,7 +1,7 @@
 import { Box, Button, Heading } from '@chakra-ui/react';
 import { useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 import { usePatientContext } from '../hooks/usePatientContext.tsx';
-import * as ConsumerContract from '../../abi/FunctionsConsumer.sol/FunctionsConsumer.json';
+import * as ConsumerContract from '../../abi/DoctorOracle.sol/DoctorOracle.json';
 
 enum Location {
   Inline = 0,
