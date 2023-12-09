@@ -1,4 +1,20 @@
-import { Alert, AlertIcon, Button, Heading } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  Heading,
+  Step,
+  StepDescription,
+  StepIcon,
+  StepIndicator,
+  StepNumber,
+  Stepper,
+  StepSeparator,
+  StepStatus,
+  StepTitle,
+  useSteps,
+} from '@chakra-ui/react';
 import { useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransaction, useContractEvent, useContractRead } from 'wagmi';
 import { usePatientContext } from '../hooks/usePatientContext.tsx';
 import * as ConsumerContract from '../../abi/DoctorOracle.sol/DoctorOracle.json';
@@ -50,6 +66,14 @@ const sampleResponse = {
     'kNDHwbiMCcOmxE+c5sLX+Ene+4qVwRITnvogpgRzKlTx/k8+9jl64sk0jvK82tXCgXgc5nGKdr1yM5D0+l8ffL4NQVamFPPIFI5SpuY9CUq6yUDcQTzKpsbjqKRgYwOkwjrRApKx5OI+6UDxo3ea/U7ETq/t3Z0WrOKCdxyp/v3TsVGwYObirGT80h/pbLmVhGWUcKhdYE1nUIUaS1CCvVbra3vM0Ixk1rPFeA0AU4iQfypPbcHJFYiVC7oBKisGaXekZKkQI3LXKrJaNFw89eHxq9GcQFngbdjQrTuCvBG1i3ipBwSyl5ycSrc8y81Npu2o7gvd/OLOxc/bLn/o2w==',
 };
 
+const steps = [
+  { title: 'Step 1', description: 'Consent' },
+  { title: 'Step 2', description: 'About you' },
+  { title: 'Step 3', description: 'Your health and fitness' },
+  { title: 'Step 4', description: 'How can I help?' },
+  { title: 'Step 5', description: 'Ask Doctor Oracle' },
+];
+
 export const MedicalInterviewPage = () => {
   const navigate = useNavigate();
   const { publicKey, privateKey, signature } = usePatientContext();
@@ -57,6 +81,10 @@ export const MedicalInterviewPage = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [ipfsUrl, setIpfsUrl] = useState('');
+  const { activeStep, goToNext } = useSteps({
+    index: 1,
+    count: steps.length,
+  });
 
   useEffect(() => {
     if (!isConnected) {
@@ -178,7 +206,25 @@ export const MedicalInterviewPage = () => {
           {error}
         </Alert>
       )}
-      <Heading as="h2">Medical survey</Heading>
+      <Heading as="h2" mb={4}>
+        Medical survey
+      </Heading>
+      <Stepper size="md" colorScheme="teal" index={activeStep} mb={4}>
+        {steps.map((step, index) => (
+          <Step key={index}>
+            <StepIndicator>
+              <StepStatus complete={<StepIcon />} incomplete={<StepNumber />} active={<StepNumber />} />
+            </StepIndicator>
+
+            <Box flexShrink="0">
+              <StepTitle>{step.title}</StepTitle>
+              <StepDescription>{step.description}</StepDescription>
+            </Box>
+
+            <StepSeparator />
+          </Step>
+        ))}
+      </Stepper>
       <Button onClick={handleClick} mx={2}>
         FIRE
       </Button>
@@ -187,6 +233,9 @@ export const MedicalInterviewPage = () => {
       </Button>
       <Button onClick={encryptSaveAndSend} mx={2}>
         Encrypt, ping and send
+      </Button>
+      <Button onClick={goToNext} mx={2}>
+        Next
       </Button>
       <pre>
         {JSON.stringify(
