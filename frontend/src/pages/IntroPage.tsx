@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaCheck } from 'react-icons/fa';
 
 export const IntroPage = () => {
-  const { setSecretString } = usePatientContext();
+  const { setSignature } = usePatientContext();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +16,7 @@ export const IntroPage = () => {
   const { disconnectAsync } = useDisconnect();
   const { isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
+
   const handleClick = async () => {
     setError('');
     try {
@@ -40,7 +41,7 @@ export const IntroPage = () => {
         throw new Error('No signature received');
       }
 
-      setSecretString(signature);
+      setSignature(signature);
       navigate('/interview');
     } catch (e: any) {
       console.log('Error signing message', e);

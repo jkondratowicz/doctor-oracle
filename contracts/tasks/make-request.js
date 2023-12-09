@@ -28,6 +28,7 @@ task('make-request', 'Initiates an on-demand request from a Functions consumer c
   )
   .addOptionalParam('requestgaslimit', 'Gas limit for calling the sendRequest function', 1_500_000, types.int)
   .addOptionalParam('configpath', 'Path to Functions request config file', `${__dirname}/../functions-request-config.js`, types.string)
+  .addOptionalParam('noGistCleanup', 'Flag indicating GIST should not be cleaned up', true, types.boolean)
   .setAction(async (taskArgs, hre) => {
     // Get the required parameters
     const contractAddr = taskArgs.contract;
@@ -139,6 +140,8 @@ task('make-request', 'Initiates an on-demand request from a Functions consumer c
       requestConfig.secretsLocation = Location.Remote; // Default to Remote if no secrets are used
     }
 
+    console.log('encryptedSecretsReference', encryptedSecretsReference);
+
     // Instantiate response listener
     const responseListener = new ResponseListener({
       provider: hre.ethers.provider,
@@ -223,7 +226,7 @@ task('make-request', 'Initiates an on-demand request from a Functions consumer c
       throw error;
     } finally {
       // Clean up the gist if it was created
-      if (gistUrl) {
+      if (gistUrl && !taskArgs.noGistCleanup) {
         const successfulDeletion = await deleteGist(process.env['GITHUB_API_TOKEN'], gistUrl);
         if (!successfulDeletion) {
           console.log(`Failed to delete gist at ${gistUrl}. Please delete manually.`);

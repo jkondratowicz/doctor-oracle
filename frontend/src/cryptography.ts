@@ -1,4 +1,6 @@
-function getHash(input: string, algo = 'SHA-256') {
+import { Buffer } from 'buffer';
+
+export function getHash(input: string, algo = 'SHA-256') {
   const buffer = new TextEncoder().encode(input);
   return crypto.subtle.digest(algo, buffer).then((hash) => {
     // here hash is an arrayBuffer, so we'll convert it to its hex version
@@ -11,7 +13,7 @@ function getHash(input: string, algo = 'SHA-256') {
   });
 }
 
-async function generateKeyPair() {
+export async function generateKeyPair() {
   return await crypto.subtle.generateKey(
     {
       name: 'RSA-OAEP',
@@ -24,41 +26,42 @@ async function generateKeyPair() {
   );
 }
 
-async function generateAesKey() {
+export async function generateAesKey() {
   return await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 }
 
-async function encryptDataWithAes(aesKey: CryptoKey, data: string) {
+export async function encryptDataWithAes(aesKey: CryptoKey, data: string) {
   const encodedData = new TextEncoder().encode(data);
   const iv = crypto.getRandomValues(new Uint8Array(12)); // Initialization vector
   const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, aesKey, encodedData);
   return { encrypted, iv };
 }
-async function encryptAesKey(rsaPublicKey: CryptoKey, aesKey: CryptoKey) {
+
+export async function encryptAesKey(rsaPublicKey: CryptoKey, aesKey: CryptoKey) {
   const exportedAesKey = await crypto.subtle.exportKey('raw', aesKey);
   return await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, rsaPublicKey, exportedAesKey);
 }
 
-async function decryptAesKey(rsaPrivateKey: CryptoKey, encryptedKey) {
+export async function decryptAesKey(rsaPrivateKey: CryptoKey, encryptedKey: ArrayBufferLike) {
   const decryptedKey = await crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaPrivateKey, encryptedKey);
   return await crypto.subtle.importKey('raw', decryptedKey, { name: 'AES-GCM', length: 256 }, true, ['decrypt']);
 }
 
-async function decryptDataWithAes(aesKey, encryptedData, iv) {
+export async function decryptDataWithAes(aesKey: CryptoKey, encryptedData: ArrayBufferLike, iv: ArrayBufferLike) {
   const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, aesKey, encryptedData);
   return new TextDecoder().decode(decrypted);
 }
 
-async function exportPublicKey(key): Promise<string> {
+export async function exportPublicKey(key: CryptoKey): Promise<string> {
   return bufferToBase64(await crypto.subtle.exportKey('spki', key));
 }
 
-async function exportPrivateKey(key): Promise<string> {
+export async function exportPrivateKey(key: CryptoKey): Promise<string> {
   const exported = await crypto.subtle.exportKey('pkcs8', key);
   return bufferToBase64(exported);
 }
 
-async function importPublicKey(exportedKey: string) {
+export async function importPublicKey(exportedKey: string) {
   const key = base64ToBuffer(exportedKey);
   return await crypto.subtle.importKey(
     'spki',
@@ -72,16 +75,16 @@ async function importPublicKey(exportedKey: string) {
   );
 }
 
-async function importPrivateKey(base64: string) {
+export async function importPrivateKey(base64: string) {
   const keyBuffer = base64ToBuffer(base64);
   return await crypto.subtle.importKey('pkcs8', keyBuffer, { name: 'RSA-OAEP', hash: 'SHA-256' }, true, ['decrypt']);
 }
 
-function bufferToBase64(buffer: ArrayBufferLike): string {
-  return btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)));
+export function bufferToBase64(buffer: ArrayBufferLike): string {
+  return btoa(String.fromCharCode.apply(null, new Uint8Array(buffer) as unknown as number[]));
 }
 
-function base64ToBuffer(base64: string): ArrayBufferLike {
+export function base64ToBuffer(base64: string): ArrayBufferLike {
   const binaryString = atob(base64);
   const bytes = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
@@ -90,7 +93,7 @@ function base64ToBuffer(base64: string): ArrayBufferLike {
   return bytes.buffer;
 }
 
-const encrypt = async (payload: any, encryptionPublicKey: string) => {
+export const encrypt = async (payload: any, encryptionPublicKey: string) => {
   const publicKey = await importPublicKey(encryptionPublicKey);
 
   const aesKey = await generateAesKey();
@@ -104,8 +107,19 @@ const encrypt = async (payload: any, encryptionPublicKey: string) => {
   };
 };
 
-const decrypt = async (encryptedData: string, iv: string, encryptedAesKey: string, decryptionPrivateKey: string) => {
+export const decrypt = async (encryptedData: string, iv: string, encryptedAesKey: string, decryptionPrivateKey: string) => {
   const privateKey = await importPrivateKey(decryptionPrivateKey);
   const decryptedAesKey = await decryptAesKey(privateKey, base64ToBuffer(encryptedAesKey));
   return JSON.parse(await decryptDataWithAes(decryptedAesKey, base64ToBuffer(encryptedData), base64ToBuffer(iv)));
+};
+
+export const decodeHexString = (hexString: string) => {
+  if (!hexString.startsWith('0x')) {
+    console.log('Invalid hex string', hexString);
+    return '';
+  }
+  if (hexString === '0x') {
+    return '';
+  }
+  return Buffer.from(hexString.slice(2), 'hex').toString();
 };

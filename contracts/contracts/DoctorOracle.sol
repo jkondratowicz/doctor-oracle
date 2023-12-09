@@ -42,6 +42,7 @@ contract DoctorOracle is FunctionsClient, ConfirmedOwner {
     ) external returns (bytes32 requestId) {
         _validateAndSubtractBalance(msg.sender, callbackGasLimit);
 
+
         FunctionsRequest.Request memory req;
         req.initializeRequest(FunctionsRequest.Location.Inline, FunctionsRequest.CodeLanguage.JavaScript, source);
         req.secretsLocation = secretsLocation;
@@ -53,6 +54,8 @@ contract DoctorOracle is FunctionsClient, ConfirmedOwner {
             req.setBytesArgs(bytesArgs);
         }
         s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, callbackGasLimit, s_donId);
+
+        s_patientAddresses[s_lastRequestId] = msg.sender;
 
         return s_lastRequestId;
     }

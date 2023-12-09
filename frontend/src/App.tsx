@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
 import { WagmiConfig, createConfig, configureChains } from 'wagmi';
-import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
@@ -11,11 +10,20 @@ import { HomePage } from './pages/HomePage.tsx';
 import { ErrorPage } from './pages/ErrorPage.tsx';
 import { FAQPage } from './pages/FAQPage.tsx';
 import { Layout } from './components/Layout.tsx';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 function App() {
   const { chains, publicClient, webSocketPublicClient } = configureChains(
     [polygonMumbai],
-    [infuraProvider({ apiKey: import.meta.env.VITE_INFURA_API_KEY }), publicProvider()]
+    [
+      jsonRpcProvider({
+        rpc: () => ({
+          http: `https://${import.meta.env.VITE_QUICKNODE_NODE_URL}`,
+          webSocket: `wss://${import.meta.env.VITE_QUICKNODE_NODE_URL}`,
+        }),
+      }),
+      publicProvider(),
+    ]
   );
 
   // Set up wagmi config
