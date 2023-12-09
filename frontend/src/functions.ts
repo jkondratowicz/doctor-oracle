@@ -19,7 +19,7 @@ export const requestConfig = {
   source: `const OPENAI_MODEL = 'gpt-3.5-turbo';
 const HTTP_TIMEOUT = 9000;
 const SIMULATE_RESPONSE = true;
-const [inputCid, patientPublicKeyB64] = args;
+const [ipfsUrl, patientPublicKeyB64] = args;
 
 // Secrets:
 // - openAIApiKey
@@ -113,9 +113,9 @@ const decrypt = async (encryptedData: string, iv: string, encryptedAesKey: strin
   return JSON.parse(await decryptDataWithAes(decryptedAesKey, base64ToBuffer(encryptedData), base64ToBuffer(iv)));
 };
 
-async function getIPFSData(cid) {
+async function getIPFSData(url) {
   const ipfsResponse = await Functions.makeHttpRequest({
-    url: \`https://\$\{cid}.ipfs.w3s.link/\`,
+    url,
     method: 'GET',
     timeout: HTTP_TIMEOUT,
   });
@@ -188,7 +188,7 @@ async function saveToIPFS(content: string, filename: string) {
   return quickNodeResponse.data.cid;
 }
 
-const { encryptedData, iv, encryptedAesKey } = await getIPFSData(inputCid);
+const { encryptedData, iv, encryptedAesKey } = await getIPFSData(ipfsUrl);
 
 const decryptedData = await decrypt(encryptedData, iv, encryptedAesKey, secrets.secretString);
 
