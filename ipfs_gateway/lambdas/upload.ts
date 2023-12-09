@@ -2,6 +2,9 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import FormData = require('form-data');
 import { errorResponse, getRequestBody, successResponse } from './utils';
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
+
+axiosRetry(axios, { retries: 3 });
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.log(`Request: ${JSON.stringify(event, null, 2)}`);
@@ -18,7 +21,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       method: 'POST',
       url: 'https://api.quicknode.com/ipfs/rest/v1/s3/put-object',
       headers: {
-        'x-api-key': body.quickNodeApiKey,
+        'x-api-key': body.quickNodeApiKey || process.env.QUICKNODE_API_KEY,
       },
       data: formData,
     });

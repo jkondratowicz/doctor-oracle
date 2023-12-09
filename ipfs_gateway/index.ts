@@ -1,6 +1,6 @@
 import { IResource, LambdaIntegration, MockIntegration, PassthroughBehavior, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, aws_ssm as ssm } from 'aws-cdk-lib';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { join } from 'path';
 
@@ -8,12 +8,19 @@ export class DoctorOracleIPFSStack extends Stack {
   constructor(app: App, id: string) {
     super(app, id);
 
+    const param = new ssm.StringParameter(this, 'QUICKNODE_API_KEY', {
+      stringValue: 'QUICKNODE_API_KEY',
+      parameterName: 'QuickNodeApiKey',
+    });
+
     const nodeJsFunctionProps: NodejsFunctionProps = {
       bundling: {
         externalModules: ['aws-sdk'],
       },
       depsLockFilePath: join(__dirname, 'lambdas', 'package-lock.json'),
-      environment: {},
+      environment: {
+        QUICKNODE_API_KEY: param.stringValue,
+      },
       runtime: Runtime.NODEJS_18_X,
     };
 
