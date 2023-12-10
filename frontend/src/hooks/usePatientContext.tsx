@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useStickyState } from './useStickyState';
-import { generateKeyPair, exportPublicKey, exportPrivateKey } from '../cryptography.ts';
+import { generateKeyPair, exportPublicKey, exportPrivateKey } from '../utils/cryptography.ts';
 
 enum AppMode {
   normal,

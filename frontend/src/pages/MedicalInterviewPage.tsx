@@ -18,10 +18,12 @@ import {
 import { useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransaction, useContractEvent, useContractRead } from 'wagmi';
 import { usePatientContext } from '../hooks/usePatientContext.tsx';
 import * as ConsumerContract from '../../abi/DoctorOracle.sol/DoctorOracle.json';
-import { requestConfig } from '../functions.ts';
+import { requestConfig } from '../utils/functions.ts';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { decodeHexString, decrypt, encrypt } from '../cryptography.ts';
+import { decodeHexString, decrypt, encrypt } from '../utils/cryptography.ts';
+import { InterviewStage1 } from '../components/InterviewStage1.tsx';
+import { EncryptedResponse, MedicalSurvey, steps } from '../utils/survey.ts';
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 const ENCRYPTED_SECRETS_REFERENCE = import.meta.env.VITE_ENCRYPTED_SECRETS_REFERENCE;
@@ -37,12 +39,6 @@ interface LogWithResponse {
     requestId: string;
     response: string;
   };
-}
-
-interface EncryptedResponse {
-  encryptedAesKey: string;
-  encryptedData: string;
-  iv: string;
 }
 
 // @todo cleanup
@@ -66,14 +62,6 @@ const sampleResponse = {
     'kNDHwbiMCcOmxE+c5sLX+Ene+4qVwRITnvogpgRzKlTx/k8+9jl64sk0jvK82tXCgXgc5nGKdr1yM5D0+l8ffL4NQVamFPPIFI5SpuY9CUq6yUDcQTzKpsbjqKRgYwOkwjrRApKx5OI+6UDxo3ea/U7ETq/t3Z0WrOKCdxyp/v3TsVGwYObirGT80h/pbLmVhGWUcKhdYE1nUIUaS1CCvVbra3vM0Ixk1rPFeA0AU4iQfypPbcHJFYiVC7oBKisGaXekZKkQI3LXKrJaNFw89eHxq9GcQFngbdjQrTuCvBG1i3ipBwSyl5ycSrc8y81Npu2o7gvd/OLOxc/bLn/o2w==',
 };
 
-const steps = [
-  { title: 'Step 1', description: 'Consent' },
-  { title: 'Step 2', description: 'About you' },
-  { title: 'Step 3', description: 'Your health and fitness' },
-  { title: 'Step 4', description: 'How can I help?' },
-  { title: 'Step 5', description: 'Ask Doctor Oracle' },
-];
-
 export const MedicalInterviewPage = () => {
   const navigate = useNavigate();
   const { publicKey, privateKey, signature } = usePatientContext();
@@ -81,6 +69,7 @@ export const MedicalInterviewPage = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [ipfsUrl, setIpfsUrl] = useState('');
+  const [surveyData, setSurveyData] = useState<MedicalSurvey>({});
   const { activeStep, goToNext } = useSteps({
     index: 1,
     count: steps.length,
@@ -193,6 +182,14 @@ export const MedicalInterviewPage = () => {
     console.log(url);
   };
 
+  const setValue = (key: string, value: any) => {
+    console.log('setValue', key, value);
+    setSurveyData({
+      ...surveyData,
+      [key]: value,
+    });
+  };
+
   const handleClick = async () => {
     setError('');
     await write?.();
@@ -225,6 +222,8 @@ export const MedicalInterviewPage = () => {
           </Step>
         ))}
       </Stepper>
+      {activeStep === 1 && <InterviewStage1 setValue={setValue} data={surveyData} nextStep={goToNext} />}
+
       <Button onClick={handleClick} mx={2}>
         FIRE
       </Button>
