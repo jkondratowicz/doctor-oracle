@@ -46,7 +46,7 @@ export const InterviewStage1 = ({ data, setValue, nextStep }: InterviewStageProp
       />
 
       <Text fontSize={'lg'} my={6}>
-        If you're happy with the answers provided above, please proceed to the next stage. You're doing great!
+        You're doing great! If you're happy with the answers provided above, please proceed to the next stage.
       </Text>
       <Button rightIcon={<HiArrowLongRight />} colorScheme="green" variant="solid" onClick={nextStep}>
         Go to the next stage

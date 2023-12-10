@@ -18,7 +18,7 @@ export enum ReturnType {
 export const requestConfig = {
   source: `const OPENAI_MODEL = 'gpt-3.5-turbo';
 const HTTP_TIMEOUT = 9000;
-const SIMULATE_RESPONSE = true;
+const SIMULATE_RESPONSE = false;
 const [ipfsUrl, patientPublicKeyB64] = args;
 
 // Secrets:
