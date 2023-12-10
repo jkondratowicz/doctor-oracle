@@ -26,7 +26,7 @@ export const InterviewStage5 = ({
         loadingText = 'Your medical survey is being sent to Doctor Oracle, please confirm the transaction.';
         break;
       default:
-        loadingText = "Doctor Oracle is analyzing your medical survey. Please wait for the response. It shouldn't take more than 30 seconds!";
+        loadingText = 'Doctor Oracle is analyzing your medical survey. Please wait for the response. It should take around one minute.';
         break;
     }
     return (
