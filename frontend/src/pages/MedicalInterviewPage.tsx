@@ -58,6 +58,7 @@ export const MedicalInterviewPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [decryptedResponse, setDecryptedResponse] = useState();
+  const [loadingStage, setLoadingStage] = useState(1);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -74,16 +75,28 @@ export const MedicalInterviewPage = () => {
     abi: ConsumerContract.abi,
     functionName: 'sendRequest',
     args: [requestConfig.source, requestConfig.secretsLocation, ENCRYPTED_SECRETS_REFERENCE, [ipfsUrl, publicKey], [], SUBSCRIPTION_ID, CALLBACK_GAS_LIMIT],
-    enabled: Boolean(true),
+    enabled: Boolean(ipfsUrl),
   });
-  const { error: writeError, write } = useContractWrite(config);
+  const { error: writeError, write, isSuccess } = useContractWrite(config);
 
   useEffect(() => {
     if (!ipfsUrl) {
       return;
     }
-    write?.();
+    setLoadingStage(2);
   }, [ipfsUrl]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setLoadingStage(3);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (write && typeof write === 'function' && Boolean(ipfsUrl)) {
+      write();
+    }
+  }, [write]);
 
   useEffect(() => {
     if (!decryptedResponse) {
@@ -169,6 +182,7 @@ export const MedicalInterviewPage = () => {
     goToNext();
     setError('');
     setIsLoading(true);
+    setLoadingStage(1);
     const parsedData = convertMedicalSurveyToQA(surveyData);
     const prompt = qaToPrompt(parsedData);
     await encryptSaveAndSend(prompt);
@@ -185,7 +199,7 @@ export const MedicalInterviewPage = () => {
       <Heading as="h2" mb={4}>
         Medical survey
       </Heading>
-      <Stepper size="md" colorScheme="teal" index={activeStep} mb={4}>
+      <Stepper size="sm" colorScheme="teal" index={activeStep} mb={4}>
         {steps.map((step, index) => (
           <Step key={index}>
             <StepIndicator>
@@ -205,7 +219,7 @@ export const MedicalInterviewPage = () => {
       {activeStep === 2 && <InterviewStage2 setValue={setValue} data={surveyData} nextStep={goToNext} />}
       {activeStep === 3 && <InterviewStage3 setValue={setValue} data={surveyData} nextStep={goToNext} />}
       {activeStep === 4 && <InterviewStage4 data={surveyData} submit={handleSubmit} />}
-      {activeStep === 5 && <InterviewStage5 data={surveyData} isLoading={isLoading} response={decryptedResponse} />}
+      {activeStep === 5 && <InterviewStage5 data={surveyData} isLoading={isLoading} loadingStage={loadingStage} response={decryptedResponse} />}
     </>
   );
 };

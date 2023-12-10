@@ -4,17 +4,39 @@ import { InterviewSummary } from './InterviewSummary.tsx';
 import { useState } from 'react';
 import { NiceMarkdown } from './NiceMarkdown.tsx';
 
-export const InterviewStage5 = ({ data, isLoading, response }: { data: MedicalSurvey; isLoading: boolean; response?: string }) => {
+export const InterviewStage5 = ({
+  data,
+  isLoading,
+  response,
+  loadingStage,
+}: {
+  data: MedicalSurvey;
+  isLoading: boolean;
+  response?: string;
+  loadingStage: number;
+}) => {
   const [showSurvey, setShowSurvey] = useState(false);
   if (isLoading) {
+    let loadingText;
+    switch (loadingStage) {
+      case 1:
+        loadingText = 'Your medical survey is being encrypted using strong cryptography, please wait...';
+        break;
+      case 2:
+        loadingText = 'Your medical survey is being sent to Doctor Oracle, please confirm the transaction.';
+        break;
+      default:
+        loadingText = "Doctor Oracle is analyzing your medical survey. Please wait for the response. It shouldn't take more than 30 seconds!";
+        break;
+    }
     return (
-      <Stack spacing={3} mt={8}>
+      <Stack spacing={3} mt={8} minW="xl">
         <Heading as="h3" size="lg">
           Your diagnosis and recommendations
         </Heading>
-        <Card bg="gray.100" p={4} rounded="md" my={4}>
-          <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" mb={4} />
-          <Text fontSize="lg">Please wait while Doctor Oracle analyzes your medical survey...</Text>
+        <Card bg="gray.100" p={6} rounded="md" my={4}>
+          <Spinner thickness="4px" speed="0.65s" emptyColor="gray.100" color="red.500" size="xl" mb={4} mx="auto" />
+          <Text fontSize="lg">{loadingText}</Text>
         </Card>
       </Stack>
     );
