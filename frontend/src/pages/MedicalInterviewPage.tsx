@@ -57,6 +57,7 @@ export const MedicalInterviewPage = () => {
     count: steps.length,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [alreadySent, setAlreadySent] = useState(false);
   const [decryptedResponse, setDecryptedResponse] = useState();
   const [loadingStage, setLoadingStage] = useState(1);
 
@@ -89,11 +90,12 @@ export const MedicalInterviewPage = () => {
   useEffect(() => {
     if (isSuccess) {
       setLoadingStage(3);
+      setAlreadySent(true);
     }
   }, [isSuccess]);
 
   useEffect(() => {
-    if (write && typeof write === 'function' && Boolean(ipfsUrl)) {
+    if (write && typeof write === 'function' && Boolean(ipfsUrl) && !alreadySent) {
       write();
     }
   }, [write]);
